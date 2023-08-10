@@ -1,0 +1,91 @@
+#include <stdio.h>
+#include <string.h>
+
+struct Data {
+    int dia;
+    int mes;
+    int ano;
+};
+
+struct Cliente {
+    char nome[100];
+    Data dataNascimento;
+    char sexo;
+    int idade;
+
+    Cliente() {
+        strcpy(nome, "");
+        sexo = ' ';
+        idade = 0;
+    }
+
+    void ler() {
+        fflush(stdin);
+        printf("Nome: ");
+        scanf("%[^\n]s", nome);
+        fflush(stdin);
+        printf("Sexo (M/F): ");
+        scanf(" %c", &sexo);
+        printf("Data de Nascimento (dd/mm/aaaa): ");
+        scanf("%d/%d/%d", &dataNascimento.dia, &dataNascimento.mes, &dataNascimento.ano);
+        calcularIdade();
+    }
+
+    void imprimir() {
+        printf("Nome: %s\nSexo: %c\nIdade: %d\nNascimento: %02d/%02d/%04d\n",
+               nome, sexo, idade, dataNascimento.dia, dataNascimento.mes, dataNascimento.ano);
+    }
+
+    void calcularIdade() {
+        Data data_atual;
+        // Obter a data atual do sistema
+        data_atual.dia = 4;  // Ajuste manual, substitua pela data atual do sistema
+        data_atual.mes = 8;  // Ajuste manual, substitua pela data atual do sistema
+        data_atual.ano = 2023;  // Ajuste manual, substitua pela data atual do sistema
+
+        idade = data_atual.ano - dataNascimento.ano;
+        if (data_atual.mes < dataNascimento.mes || (data_atual.mes == dataNascimento.mes && data_atual.dia < dataNascimento.dia)) {
+            idade--;
+        }
+    }
+};
+
+int menu() {
+    printf("\nMenu\n");
+    printf("1. Ler Cliente\n");
+    printf("2. Imprimir Clientes\n");
+    printf("3. Sair\n");
+    int resp;
+    scanf("%d", &resp);
+    return resp;
+}
+
+int main() {
+    Cliente c[50];
+    int id = 0, resp;
+
+    do {
+        resp = menu();
+
+        switch (resp) {
+            case 1:
+                if (id < 50)
+                    c[id++].ler();
+                else
+                    printf("Limite de clientes atingido!\n");
+                break;
+            case 2:
+                for (int i = 0; i < id; i++) {
+                    c[i].imprimir();
+                }
+                break;
+            case 3:
+                printf("Saindo...\n");
+                break;
+            default:
+                printf("Opção inválida!\n");
+        }
+    } while (resp != 3);
+
+    return 0;
+}

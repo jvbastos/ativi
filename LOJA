@@ -1,0 +1,83 @@
+#include <stdio.h>
+#include <string.h>
+
+struct Data {
+    int dia;
+    int mes;
+    int ano;
+};
+
+struct Cliente {
+    char nome[100];
+    struct Data dataNascimento;
+    char sexo;
+    int idade;
+};
+
+void calcularIdade(struct Cliente *cliente) {
+    struct Data dataAtual;
+    printf("Digite a data atual (dia mes ano): ");
+    scanf("%d %d %d", &dataAtual.dia, &dataAtual.mes, &dataAtual.ano);
+
+    cliente->idade = dataAtual.ano - cliente->dataNascimento.ano;
+
+    if (cliente->dataNascimento.mes > dataAtual.mes ||
+        (cliente->dataNascimento.mes == dataAtual.mes && cliente->dataNascimento.dia > dataAtual.dia)) {
+        cliente->idade--;
+    }
+}
+
+int main() {
+    struct Cliente clientes[50];
+    int numClientes = 0;
+
+    int opcao;
+    do {
+        printf("Menu\n");
+        printf("1. Cadastrar cliente\n");
+        printf("2. Listar clientes\n");
+        printf("3. Sair\n");
+        printf("Escolha uma opcao: ");
+        scanf("%d", &opcao);
+
+        switch (opcao) {
+            case 1:
+                if (numClientes < 50) {
+                    printf("Cadastrar novo cliente:\n");
+                    printf("Nome: ");
+                    scanf(" %[^\n]", clientes[numClientes].nome);
+                    printf("Sexo (M/F): ");
+                    scanf(" %c", &clientes[numClientes].sexo);
+                    printf("Data de Nascimento (dia mes ano): ");
+                    scanf("%d %d %d", &clientes[numClientes].dataNascimento.dia, &clientes[numClientes].dataNascimento.mes, &clientes[numClientes].dataNascimento.ano);
+
+                    calcularIdade(&clientes[numClientes]);
+                    numClientes++;
+                } else {
+                    printf("Limite de clientes atingido!\n");
+                }
+                break;
+
+            case 2:
+                printf("Lista de clientes:\n");
+                for (int i = 0; i < numClientes; i++) {
+                    printf("Cliente %d:\n", i + 1);
+                    printf("Nome: %s\n", clientes[i].nome);
+                    printf("Sexo: %c\n", clientes[i].sexo);
+                    printf("Data de Nascimento: %02d/%02d/%04d\n", clientes[i].dataNascimento.dia, clientes[i].dataNascimento.mes, clientes[i].dataNascimento.ano);
+                    printf("Idade: %d\n", clientes[i].idade);
+                    printf("--------------------------\n");
+                }
+                break;
+
+            case 3:
+                printf("Saindo...\n");
+                break;
+
+            default:
+                printf("Opcao invalida!\n");
+        }
+    } while (opcao != 3);
+
+    return 0;
+}

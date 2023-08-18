@@ -1,83 +1,90 @@
 #include <stdio.h>
 #include <string.h>
 
-struct Data {
-    int dia;
-    int mes;
-    int ano;
-};
-
-struct Cliente {
+struct Funcionario {
     char nome[100];
-    struct Data dataNascimento;
-    char sexo;
-    int idade;
+    char cargo[50];
+    double salarioBase;
+    double beneficios;
+    double descontos;
+    double salario;
+
+    void ler() {
+        scanf("%[^\n]%*c", nome);
+        scanf("%[^\n]%*c", cargo);
+        scanf("%lf %lf %lf%*c", &salarioBase, &beneficios, &descontos);
+        salario = salarioBase + beneficios - descontos;
+    }
+
+    void imprimir() {
+        printf("%s\n", nome);
+        printf("%s\n", cargo);
+        printf("Salario Base: R$ %.2lf\n", salarioBase);
+        printf("Beneficios: R$ %.2lf\n", beneficios);
+        printf("Descontos: R$ %.2lf\n", descontos);
+        printf("Salario Final: R$ %.2lf\n", salario);
+    }
 };
 
-void calcularIdade(struct Cliente *cliente) {
-    struct Data dataAtual;
-    printf("Digite a data atual (dia mes ano): ");
-    scanf("%d %d %d", &dataAtual.dia, &dataAtual.mes, &dataAtual.ano);
+struct Loja {
+    Funcionario f[10];
+    int ultimoFuncionario;
+    double totalSalarios, maior;
 
-    cliente->idade = dataAtual.ano - cliente->dataNascimento.ano;
-
-    if (cliente->dataNascimento.mes > dataAtual.mes ||
-        (cliente->dataNascimento.mes == dataAtual.mes && cliente->dataNascimento.dia > dataAtual.dia)) {
-        cliente->idade--;
+    Loja() {
+        ultimoFuncionario = 0;
+        totalSalarios = 0;
+        maior = 0;
     }
-}
+
+    void ler() {
+        f[ultimoFuncionario].ler();
+        totalSalarios += f[ultimoFuncionario].salario;
+        if (f[ultimoFuncionario].salario > maior) {
+            maior = f[ultimoFuncionario].salario;
+        }
+        ultimoFuncionario++;
+    }
+
+    void listarTodos() {
+        for (int i = 0; i < ultimoFuncionario; i++) {
+            f[i].imprimir();
+        }
+    }
+
+    double mediaSalarial() {
+        if (ultimoFuncionario == 0) {
+            return 0;
+        }
+        return totalSalarios / ultimoFuncionario;
+    }
+
+    double maiorSalario() {
+        return maior;
+    }
+};
 
 int main() {
-    struct Cliente clientes[50];
-    int numClientes = 0;
-
+    Loja l;
     int opcao;
+
     do {
-        printf("Menu\n");
-        printf("1. Cadastrar cliente\n");
-        printf("2. Listar clientes\n");
-        printf("3. Sair\n");
-        printf("Escolha uma opcao: ");
-        scanf("%d", &opcao);
+        printf("1. Cadastrar\n");
+        printf("2. Listar\n");
+        printf("3. Media Salarial\n");
+        printf("4. Maior Salario\n");
+        scanf("%d%*c", &opcao);
 
-        switch (opcao) {
-            case 1:
-                if (numClientes < 50) {
-                    printf("Cadastrar novo cliente:\n");
-                    printf("Nome: ");
-                    scanf(" %[^\n]", clientes[numClientes].nome);
-                    printf("Sexo (M/F): ");
-                    scanf(" %c", &clientes[numClientes].sexo);
-                    printf("Data de Nascimento (dia mes ano): ");
-                    scanf("%d %d %d", &clientes[numClientes].dataNascimento.dia, &clientes[numClientes].dataNascimento.mes, &clientes[numClientes].dataNascimento.ano);
-
-                    calcularIdade(&clientes[numClientes]);
-                    numClientes++;
-                } else {
-                    printf("Limite de clientes atingido!\n");
-                }
-                break;
-
-            case 2:
-                printf("Lista de clientes:\n");
-                for (int i = 0; i < numClientes; i++) {
-                    printf("Cliente %d:\n", i + 1);
-                    printf("Nome: %s\n", clientes[i].nome);
-                    printf("Sexo: %c\n", clientes[i].sexo);
-                    printf("Data de Nascimento: %02d/%02d/%04d\n", clientes[i].dataNascimento.dia, clientes[i].dataNascimento.mes, clientes[i].dataNascimento.ano);
-                    printf("Idade: %d\n", clientes[i].idade);
-                    printf("--------------------------\n");
-                }
-                break;
-
-            case 3:
-                printf("Saindo...\n");
-                break;
-
-            default:
-                printf("Opcao invalida!\n");
+        if (opcao == 1) {
+            l.ler();
+        } else if (opcao == 2) {
+            l.listarTodos();
+        } else if (opcao == 3) {
+            printf("R$ %.2lf\n", l.mediaSalarial());
+        } else if (opcao == 4) {
+            printf("R$ %.2lf\n", l.maiorSalario());
         }
-    } while (opcao != 3);
+    } while (opcao == 1 || opcao == 2 || opcao == 3 || opcao == 4);
 
     return 0;
 }
